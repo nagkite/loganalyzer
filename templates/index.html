@@ -1,16 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Log File Analyzer</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="script.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        #logFileForm {
+            margin-bottom: 20px;
+        }
+        #logFileForm input[type=file] {
+            display: block;
+            margin-bottom: 10px;
+        }
+        #logFileForm input[type=submit] {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        #logFileForm input[type=submit]:hover {
+            background-color: #0056b3;
+        }
+        #analysisResults p {
+            background-color: #e7f3fe;
+            border-left: 3px solid #2196F3;
+            padding: 10px;
+            margin: 10px 0;
+            white-space: pre-line;
+        }
+    </style>
 </head>
 <body>
-    <h1>Log File Analyzer</h1>
-    <form id="logFileForm" method="post" enctype="multipart/form-data">
-        <input type="file" id="logFile" name="logFile" accept=".txt">
-        <input type="submit" value="Analyze">
-    </form>
-    <div id="analysisResults"></div>
+    <div class="container">
+        <h1>Log File Analyzer</h1>
+        <form id="logFileForm" method="post" enctype="multipart/form-data">
+            <input type="file" id="logFile" name="logFile" accept=".txt,.json">
+            <input type="submit" value="Analyze">
+        </form>
+        <div id="analysisResults"></div>
+    </div>
+
+    <script>
+        // JavaScript to handle form submission and display results
+        $(function() {
+            $('#logFileForm').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+
+                $.ajax({
+                    url: '/', // The endpoint on your server
+                    type: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(data) {
+                        // Assuming data is an array of strings
+                        var formattedResults = "";
+                        data.forEach(function(result) {
+                            formattedResults += "<p>" + result.replace(/\n/g, "<br>") + "</p>";
+                        });
+                        $('#analysisResults').html(formattedResults);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#analysisResults').html("<p>An error occurred: " + error + "</p>");
+                    }
+                });
+            });
+        });
+    </script>
 </body>
 </html>
